@@ -13,7 +13,8 @@ account and clone this repository to have a copy.
 
 # IRC
 
-Just ask/comment/talk with me in [IRC](http://kiwiirc.com/client/#R) my nick is
+Just ask/comment/talk with me in
+[IRC](https://kiwiirc.com/nextclient/chat.freenode.net/#R) my nick is
 arthurpbs.
 
 # Rpubs Publish
