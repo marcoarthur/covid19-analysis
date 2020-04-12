@@ -15,3 +15,8 @@ account and clone this repository to have a copy.
 
 Just ask/comment/talk with me in [IRC](http://kiwiirc.com/client/#R) my nick is
 arthurpbs.
+
+# Rpubs Publish
+
+The knit-R rendered document is public available
+[here](https://rpubs.com/marcoarthur/covid19_brazil)
