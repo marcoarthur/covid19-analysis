@@ -15,9 +15,9 @@ library(gridExtra)
 library(purrr)
 
 covid_ds <-
-  read_csv("covid/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/03-25-2020.csv")
+  read_csv("data/jhopkins/covid/csse_covid_19_data/csse_covid_19_daily_reports/03-25-2020.csv")
 time_series_covid19_deaths_global <-
-  read_csv("covid/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
+  read_csv("data/jhopkins/covid/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 
 ```
 
@@ -36,19 +36,19 @@ extract_ts <- function( country ) {
   filter( `Country/Region` == country)
 
   df <- map_if(df, is.numeric, sum) %>% as_tibble()
-  tmp <- as_tibble(cbind(index = names(df), t(df)))
+  tmp <- as_tibble(cbind(days = names(df), t(df)))
   tmp <- tmp[ -c(1:4), ] # remove header
   class(tmp[[2]]) <- "double" # convert to double
   # rename death count
   tmp <- tmp %>%
     rename( deaths = V2) 
-  # create index for time series
+  # create days for time series
   tmp <- tmp %>%
-    mutate( index = parse_date(index, format = "%m/%d/%y"))
+    mutate( days = parse_date(days, format = "%m/%d/%y"))
   
   # create the tibble
   ts <- tmp %>%
-    as_tibble()
+    as_tsibble()
   
   return <- ts
 }
@@ -57,7 +57,7 @@ do_plots <- function(countries) {
   dfs <- map(countries, extract_ts)
   plot_me <- function(df) {
     df %>% 
-      ggplot( aes( x = index, y = deaths)) +
+      ggplot( aes( x = days, y = deaths)) +
       geom_line()
     }
   plots <- map(dfs, plot_me)
