@@ -1,0 +1,93 @@
+---
+title: "Covid daily"
+author: "Marco Arthur"
+date: "3/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(tsibble)
+library(lubridate)
+library(gridExtra)
+library(purrr)
+
+covid_ds <-
+  read_csv("covid/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/03-25-2020.csv")
+time_series_covid19_deaths_global <-
+  read_csv("covid/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
+
+```
+
+## Dataset
+
+We are using dataset from John Hopkins CSSE for global desease. The github
+repository with the raw data can be found
+[here](https://github.com/CSSEGISandData/COVID-19)
+
+The graph bellow shows Brazil and Italy death count
+```{r}
+
+
+extract_ts <- function( country ) {
+  df <- time_series_covid19_deaths_global %>%
+  filter( `Country/Region` == country)
+
+  df <- map_if(df, is.numeric, sum) %>% as_tibble()
+  tmp <- as_tibble(cbind(index = names(df), t(df)))
+  tmp <- tmp[ -c(1:4), ] # remove header
+  class(tmp[[2]]) <- "double" # convert to double
+  # rename death count
+  tmp <- tmp %>%
+    rename( deaths = V2) 
+  # create index for time series
+  tmp <- tmp %>%
+    mutate( index = parse_date(index, format = "%m/%d/%y"))
+  
+  # create the tibble
+  ts <- tmp %>%
+    as_tibble()
+  
+  return <- ts
+}
+
+do_plots <- function(countries) {
+  dfs <- map(countries, extract_ts)
+  plot_me <- function(df) {
+    df %>% 
+      ggplot( aes( x = index, y = deaths)) +
+      geom_line()
+    }
+  plots <- map(dfs, plot_me)
+}
+
+compare_countries <- function ( countries_list ) {
+  plots <- do_plots(countries_list)
+  # add label to plot
+  for( i in seq_along(plots)) {
+    plots[[i]] <- plots[[i]] + labs(title = countries_list[[i]])
+  }
+  # arrange in N-columns the plots
+  args_list = c(plots, ncol = length(countries_list))
+  do.call("grid.arrange", args_list)  
+}
+
+# make plots for brazil and italy
+compare_countries(c("Brazil", "Italy"))
+```
+
+
+Comparing US and China
+```{r}
+
+compare_countries(c("US", "China"))
+```
+
+
+Comparing Brazil and US
+
+```{r}
+compare_countries(c("Brazil","US"))
+```
