@@ -46,9 +46,9 @@ extract_ts <- function( country ) {
   tmp <- tmp %>%
     mutate( days = parse_date(days, format = "%m/%d/%y"))
   
-  # create the tibble
+  # create the time series
   ts <- tmp %>%
-    as_tsibble()
+    as_tsibble( index = days )
   
   return <- ts
 }
