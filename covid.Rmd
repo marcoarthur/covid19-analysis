@@ -73,15 +73,31 @@ do_plotly <- function( countries ) {
   plots <- map(dfs, plot_me)
 }
 
-compare_countries <- function ( countries_list ) {
-  plots <- do_plots(countries_list)
+compare_countries <- function ( countries_list, plotly = F ) {
+  if( plotly )
+    plots <- do_plotly(countries_list)
+  else
+    plots <- do_plots(countries_list)
+
   # add label to plot
   for( i in seq_along(plots)) {
-    plots[[i]] <- plots[[i]] + labs(title = countries_list[[i]])
+    if( plotly )
+      plots[[i]] <- plots[[i]] %>% layout( title = countries_list[[i]] )
+    else
+      plots[[i]] <- plots[[i]] + labs(title = countries_list[[i]])
   }
   # arrange in N-columns the plots
-  args_list = c(plots, ncol = length(countries_list))
-  do.call("grid.arrange", args_list)  
+  if(plotly) {
+    for( i in seq_along(plots)) {
+      plots[[i]] <- plots[[i]] %>% add_lines( name = countries_list[[i]] )
+    }
+    
+    do.call("subplot", plots)
+  }
+  else { 
+    args_list = c(plots, ncol = length(countries_list))
+    do.call("grid.arrange", args_list)  
+  }
 }
 
 # make plots for brazil and italy
@@ -99,3 +115,4 @@ Comparing Brazil and US
 ```{r}
 compare_countries(c("Brazil","US"))
 ```
+
