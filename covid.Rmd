@@ -13,6 +13,7 @@ library(tsibble)
 library(lubridate)
 library(gridExtra)
 library(purrr)
+library(plotly)
 
 covid_ds <-
   read_csv("data/jhopkins/covid/csse_covid_19_data/csse_covid_19_daily_reports/03-25-2020.csv")
@@ -63,6 +64,15 @@ do_plots <- function(countries) {
   plots <- map(dfs, plot_me)
 }
 
+do_plotly <- function( countries ) {
+  dfs <- map(countries, extract_ts)
+  plot_me <- function(df) {
+    df %>% 
+      plot_ly( x = ~days, y = ~deaths, mode = "lines")
+    }
+  plots <- map(dfs, plot_me)
+}
+
 compare_countries <- function ( countries_list ) {
   plots <- do_plots(countries_list)
   # add label to plot
@@ -81,10 +91,8 @@ compare_countries(c("Brazil", "Italy"))
 
 Comparing US and China
 ```{r}
-
 compare_countries(c("US", "China"))
 ```
-
 
 Comparing Brazil and US
 
