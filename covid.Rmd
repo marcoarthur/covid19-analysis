@@ -54,30 +54,27 @@ extract_ts <- function( country ) {
   return <- ts
 }
 
-do_plots <- function(countries) {
+do_plots <- function(countries, plotly = F ) {
   dfs <- map(countries, extract_ts)
-  plot_me <- function(df) {
-    df %>% 
-      ggplot( aes( x = days, y = deaths)) +
-      geom_line()
-    }
-  plots <- map(dfs, plot_me)
-}
 
-do_plotly <- function( countries ) {
-  dfs <- map(countries, extract_ts)
-  plot_me <- function(df) {
-    df %>% 
-      plot_ly( x = ~days, y = ~deaths, mode = "lines")
-    }
+  if ( ! plotly ) {
+    plot_me <- function(df) {
+      df %>% 
+        ggplot( aes( x = days, y = deaths)) +
+        geom_line()
+      }
+  } else {
+    plot_me <- function(df) {
+      df %>% 
+        plot_ly( x = ~days, y = ~deaths, mode = "lines")
+      }
+  }
+
   plots <- map(dfs, plot_me)
 }
 
 compare_countries <- function ( countries_list, plotly = F ) {
-  if( plotly )
-    plots <- do_plotly(countries_list)
-  else
-    plots <- do_plots(countries_list)
+  plots <- do_plots(countries_list, plotly)
 
   # add label to plot
   for( i in seq_along(plots)) {
@@ -86,12 +83,13 @@ compare_countries <- function ( countries_list, plotly = F ) {
     else
       plots[[i]] <- plots[[i]] + labs(title = countries_list[[i]])
   }
+
   # arrange in N-columns the plots
   if(plotly) {
+    # put labels each line
     for( i in seq_along(plots)) {
       plots[[i]] <- plots[[i]] %>% add_lines( name = countries_list[[i]] )
     }
-    
     do.call("subplot", plots)
   }
   else { 
@@ -113,6 +111,6 @@ compare_countries(c("US", "China"))
 Comparing Brazil and US
 
 ```{r}
-compare_countries(c("Brazil","US"))
+compare_countries(c("Brazil","US"), plotly = T)
 ```
 
