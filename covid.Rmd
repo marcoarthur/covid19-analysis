@@ -14,9 +14,25 @@ library(lubridate)
 library(gridExtra)
 library(purrr)
 library(plotly)
+library(stringr)
+
+# path to data for daily reports
+path <- file.path("data", "jhopkins", "covid", "csse_covid_19_data", "csse_covid_19_daily_reports")
+daily_files <- list.files(path)
+
+# find the most recent
+most_recent <- max(mdy(daily_files), na.rm = T)
+
+most_recent <- str_c(  ifelse(str_length(month(most_recent)) == 1, str_c("0", month(most_recent)), month(most_recent)),
+  day(most_recent),
+  year(most_recent),  sep = "-")
+most_recent <- str_c(most_recent, ".csv")
+
+# time series file path
+time_series_file <- file.path("data", "jhopkins", "covid", "csse_covid_19_data", "csse_covid_19_time_series", "time_series_covid19_deaths_global.csv")
 
 covid_ds <-
-  read_csv("data/jhopkins/covid/csse_covid_19_data/csse_covid_19_daily_reports/03-25-2020.csv")
+  read_csv(file.path(path, most_recent))
 time_series_covid19_deaths_global <-
   read_csv("data/jhopkins/covid/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 
