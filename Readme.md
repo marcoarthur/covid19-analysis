@@ -20,5 +20,5 @@ arthurpbs.
 # Rpubs Publish
 
 The knit-R rendered document is public available
-[here](https://rpubs.com/marcoarthur/brazil_covid19), it maybe outdated
+[here](https://rpubs.com/marcoarthur/covid_brazil), it maybe outdated
 sometimes.
